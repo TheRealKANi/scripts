@@ -313,7 +313,7 @@ setupFirewall () {
     systemctl enable ufw --root=/mnt &>/dev/null
     arch-chroot /mnt /bin/bash -e <<EOF
         ufw enable
-    EOF
+EOF
 }
 
 generateFstab () {
@@ -497,5 +497,3 @@ configureSystem
 enableServices
 
 scriptEnd
-
-#InstallDesktopPackages
