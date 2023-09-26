@@ -311,9 +311,9 @@ setupFirewall () {
     info_print "Setting up UFW firewall.."
     pacstrap /mnt ufw >/dev/null
     systemctl enable ufw --root=/mnt &>/dev/null
-    arch-chroot /mnt /bin/bash -e <<EOF
-        ufw enable
-EOF
+    #arch-chroot /mnt /bin/bash -e <<EOF
+#        ufw enable
+#EOF
 }
 
 generateFstab () {
@@ -349,7 +349,7 @@ configureCrypttab () {
 }
 
 pacmanSetup () {
-    info_print "Setting up pacman in installation"
+    info_print "Setting up pacman in live installation"
     pacman-key --init &>/dev/null
     pacman-key --populate archlinux &>/dev/null
     sed -Ei 's/^#(Color)$/\1\nILoveCandy/;s/^#(ParallelDownloads).*/\1 = 10/' /etc/pacman.conf
@@ -468,14 +468,13 @@ partprobe "$DISK"
 formatEFI
 formatLUKSPartition
 formatLuksContainer
+
 createSubvolumes
 mountSubvolumes
 createMountEFI
 
 microcode_detector
-
 pacmanSetup
-
 installBaseSystem
 installBaseAddons
 configureUsers
@@ -497,3 +496,5 @@ configureSystem
 enableServices
 
 scriptEnd
+
+#InstallDesktopPackages
