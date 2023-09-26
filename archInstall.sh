@@ -246,7 +246,6 @@ formatLUKSPartition () {
                                      --use-urandom "$CRYPTROOT" -d - &>/dev/null
     echo -n "$password" | cryptsetup open "$CRYPTROOT" \
                                      cryptsystem -d - 
-    BTRFS="/dev/mapper/cryptsystem"
 }
 
 formatEFI () {
