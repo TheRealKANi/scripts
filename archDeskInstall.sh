@@ -58,7 +58,7 @@ info_print "Installing 'keepassxc' password manager"
 pacstrap /mnt keepassxc &>/dev/null
 
 info_print "Installing 'pipewire' audio system"
-pacstrap /mnt pipewire-{jack,alsa,pulse} pavucontrol &>/dev/null
+pacstrap /mnt pipewire-{jack,alsa,pulse} pavucontrol wireplumber &>/dev/null
 
 info_print "Installing 'speedcrunch' calculator.."
 pacstrap /mnt speedcrunch &>/dev/nul
@@ -73,31 +73,38 @@ echo "animation = 1" >> /mnt/etc/ly/config.ini # Select Matrix like live wallpap
 info_print "Customizing install with 'yay' 'brave' 'brillo' and 'dotfiles' repo"
 arch-chroot /mnt /bin/bash -e <<EOF
 
-         echo "Installing yay in arch-chroot.."
-         mkdir -p /home/kani/tmp
-         cd /home/kani/tmp
-         git clone https://aur.archlinux.org/yay-bin.git
-         chown -R kani:kani /home/kani
-         cd yay-bin
-         sudo -u kani bash -c 'makepkg -si --noconfirm'
-         cd .. # back to tmp
-         rm -r yay-bin
+           echo "Installing yay in arch-chroot.."
+           mkdir -p /home/kani/tmp
+           cd /home/kani/tmp
+           git clone https://aur.archlinux.org/yay-bin.git
+           chown -R kani:kani /home/kani
+           cd yay-bin
+           sudo -u kani bash -c 'makepkg -si --noconfirm'
+           cd .. # back to tmp
+           rm -r yay-bin
 
-         echo "Installing 'brave' and 'brillo' using yay"
-         sudo -u kani bash -c 'yay -S --noconfirm brave-bin brillo'
+           echo "Installing 'brave' and 'brillo' using yay"
+           sudo -u kani bash -c 'yay -S --noconfirm brave-bin brillo'
 
-         # TODO - Clone dorfiles repo - Apply config later!
-         # runas kani
-         #yadm clone https://github.com/TheRealKANi/dotfiles
+           # TODO - Clone dorfiles repo - Apply config later!
+           # runas kani
+           #yadm clone https://github.com/TheRealKANi/dotfiles
 
-         echo "Setting up locale.."
-         sudo -u kani bash -c 'localectl set-x11-keymap dk'
+           echo "Setting up locale.."
+           cat > /etc/X11/xorg.conf.d/10-keyboard.conf <<EOF
+               Section "InputClass"
+                     Identifier "keyboard default"
+                     MatchIsKeyboard "yes"
+                     Option  "XkbLayout" "dk"
+                     Option  "XkbVariant" "nodeadkeys"
+               EndSection
+  EOF
 
-         echo "Starting User Services.."
-         services=(pipewire pipewire-pulse wireplumber)
-         for service in "${services[@]}"; do
-             sudo -u kani bash -c 'systemctl --user enable "$service"'
-         done
+echo "Starting User Services.."
+services=(pipewire pipewire-pulse wireplumber)
+for service in "${services[@]}"; do
+    sudo -u kani bash -c 'systemctl --user enable "$service"'
+done
 
 EOF
 
@@ -107,3 +114,14 @@ services=(ly)
 for service in "${services[@]}"; do
     systemctl enable "$service" --root=/mnt
 done
+info_print "Creating i3 keybinds to cool-retro-term, brave and rofi"
+mkdir -p /home/kani/.config/i3
+# Remove drun and enable rofi
+sed -i 's/# bindcode $mod+40 exec "rofi -modi drun,run -show drun"/bindsym $mod+d exec "rofi -modi drun,run -show drun"/' /mnt/home/kani/.config/i3/config
+sed -i 's/bindsym $mod+d exec --no-startup-id dmenu_run/# bindsym $mod+d exec --no-startup-id dmenu_run/' /mnt/home/kani/.config/i3/config
+
+# Use cool-retro-term and add brave
+sed -i 's/bindsym $mod+Return exec i3-sensible-terminal/bindsym $mod+Return exec cool-retro-term\n\n# start brave browser\nbindsym $mod+b exec brave/' /mnt/home/kani/.config/i3/config
+
+# use py3status instead of i3status - DISABLED
+#sed -i 's/status_command i3status/status_command py3status/' /mnt/home/kani/.config/i3/config
