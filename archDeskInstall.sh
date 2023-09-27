@@ -55,8 +55,8 @@ pacstrap /mnt cool-retro-term &>/dev/null
 info_print "Installing 'keepassxc' password manager"
 pacstrap /mnt keepassxc &>/dev/null
 
-info_print "Installing 'pipewire' for alsa and pulse.."
-pacstrap /mnt pipewire-{jack,alsa,pulse} &>/dev/null
+info_print "Installing 'pipewire' audio system"
+pacstrap /mnt pipewire-{jack,alsa,pulse} pavucontrol &>/dev/null
 
 info_print "Installing 'speedcrunch' calculator.."
 pacstrap /mnt speedcrunch &>/dev/nul
@@ -65,8 +65,8 @@ info_print "Installing 'YADM' config management.."
 pacstrap /mnt yadm tree &>/dev/null
 
 info_print "Configuing system wide 'ly' Display Manager.."
-echo "animate = true" > /mnt/etc/ly/config.ini # Enable lock screen animation
-echo "animation = 1" > /mnt/etc/ly/config.ini # Select Matrix like live wallpaper
+echo "animate = true" >> /mnt/etc/ly/config.ini # Enable lock screen animation
+echo "animation = 1" >> /mnt/etc/ly/config.ini # Select Matrix like live wallpaper
 
 info_print "Customizing install with 'yay' 'brave' 'brillo' and 'dotfiles' repo"
 arch-chroot /mnt /bin/bash -e <<EOF
@@ -78,6 +78,8 @@ arch-chroot /mnt /bin/bash -e <<EOF
          chown -R kani:kani /home/kani
          cd yay-bin
          sudo -u kani bash -c 'makepkg -si --noconfirm'
+         cd .. # back to tmp
+         rm -r yay-bin
 
          # Yay Install brave
          sudo -u kani bash -c 'yay -S --noconfirm brave-bin'
@@ -85,10 +87,12 @@ arch-chroot /mnt /bin/bash -e <<EOF
          # Yay install brillo
          sudo -u kani bash -c 'yay -S --noconfirm brillo'
 
-         #cd .. # Back to tmp
          # TODO - Clone dorfiles repo - Apply config later!
          # runas kani
          #yadm clone https://github.com/TheRealKANi/dotfiles
+
+         # Locale setup
+         sudo -u kani bash -c 'localectl set-x11-keymap dk'
 
 EOF
 
@@ -96,11 +100,11 @@ EOF
 info_print "Starting Global Services: ly-dm.."
 services=(ly)
 for service in "${services[@]}"; do
-    systemctl enable "$service" --root=/mnt &>/dev/null
+    systemctl enable "$service" --root=/mnt
 done
 
 info_print "Starting User Services: pipewire.."
 services=(pipewire pipewire-pulse wireplumber)
 for service in "${services[@]}"; do
-    sudo -u kani bash -c 'systemctl --user enable "$service"' &>/dev/null
+    sudo -u kani bash -c 'systemctl --user enable "$service"'
 done
