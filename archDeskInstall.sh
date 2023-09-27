@@ -80,13 +80,14 @@ arch-chroot /mnt /bin/bash -e <<EOF
          sudo -u kani bash -c 'makepkg -si --noconfirm'
 
          # Yay Install brave
-         yay -S --noconfirm brave-bin
+         sudo -u kani bash -c 'yay -S --noconfirm brave-bin'
 
          # Yay install brillo
-         yay -S --noconfirm brillo
+         sudo -u kani bash -c 'yay -S --noconfirm brillo'
 
          #cd .. # Back to tmp
          # TODO - Clone dorfiles repo - Apply config later!
+         # runas kani
          #yadm clone https://github.com/TheRealKANi/dotfiles
 
 EOF
@@ -101,5 +102,5 @@ done
 info_print "Starting User Services: pipewire.."
 services=(pipewire pipewire-pulse wireplumber)
 for service in "${services[@]}"; do
-    systemctl --user enable "$service" --root=/mnt &>/dev/null
+    sudo -u kani bash -c 'systemctl --user enable "$service"' &>/dev/null
 done
