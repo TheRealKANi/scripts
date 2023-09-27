@@ -130,7 +130,6 @@ for service in "${services[@]}"; do
     systemctl enable "$service" --root=/mnt
 done
 info_print "Creating i3 keybinds to cool-retro-term, brave, brillo and rofi"
-mkdir -p /home/kani/.config/i3
 # Remove drun and enable rofi
 sed -i 's/# bindcode $mod+40 exec "rofi -modi drun,run -show drun"/bindsym $mod+d exec "rofi -modi drun,run -show drun"/' /mnt/home/kani/.config/i3/config
 sed -i 's/bindsym $mod+d exec --no-startup-id dmenu_run/# bindsym $mod+d exec --no-startup-id dmenu_run/' /mnt/home/kani/.config/i3/config
