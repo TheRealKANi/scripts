@@ -3,6 +3,7 @@
 # https://github.com/TheRealKANi/scripts/blob/main/archInstall.sh
 # TheRealARCH Installer for my personal usage.
 # Inspired heavly and adapted from: 'https://github.com/classy-giraffe/easy-arch'
+# Run with bash <(curl -L https://raw.githubusercontent.com/TheRealKANi/scripts/main/archInstall.sh)
 clear
 echo "===================================================================================="
 echo "   _______  _             ______                 _   _______                _       "
@@ -408,9 +409,6 @@ configureSystem () {
 
   # Sign EFI bundle
   sbctl bundle -s /efi/main.efi
-
-  # Creating UEFI boot entry
-  efibootmgr --create --disk $DISK --part 1 --label "TheRealARCH" --loader main.efi --unicode
 
   # Set default spinner
   plymouth-set-default-theme -R spinner
