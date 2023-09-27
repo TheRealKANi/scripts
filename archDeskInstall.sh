@@ -72,12 +72,12 @@ info_print "Customizing install with 'yay' 'brave' 'brillo' and 'dotfiles' repo"
 arch-chroot /mnt /bin/bash -e <<EOF
 
          # Install yay in arch-chroot
-         mkdir -p /home/""$username""/tmp
-         cd /home/""$username""/tmp
+         mkdir -p /home/kani/tmp
+         cd /home/kani/tmp
          git clone https://aur.archlinux.org/yay-bin.git
-         chown -R kani:kani /home/""$username""
+         chown -R kani:kani /home/kani
          cd yay-bin
-         sudo -u ""$username"" bash -c 'makepkg -si --noconfirm'
+         sudo -u kani bash -c 'makepkg -si --noconfirm'
 
          # Yay Install brave
          yay -S --noconfirm brave-bin
