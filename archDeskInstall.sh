@@ -89,7 +89,7 @@ arch-chroot /mnt /bin/bash -e <<EOF
          # TODO - Clone dorfiles repo - Apply config later!
          #yadm clone https://github.com/TheRealKANi/dotfiles
 
-       EOF
+EOF
 
 # Enable Desktop Services
 info_print "Starting Global Services: ly-dm.."
