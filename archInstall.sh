@@ -1,7 +1,8 @@
 #!/usr/bin/env -S bash -e
-# Created By TheRealKANi 2023-09-20 <url>
+# Created By TheRealKANi 2023-09-20
+# https://github.com/TheRealKANi/scripts/blob/main/archInstall.sh
 # TheRealARCH Installer for my personal usage.
-# Inspired and adapted from: 'https://github.com/classy-giraffe/easy-arch'
+# Inspired heavly and adapted from: 'https://github.com/classy-giraffe/easy-arch'
 clear
 echo "===================================================================================="
 echo "   _______  _             ______                 _   _______                _       "
