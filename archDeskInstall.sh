@@ -129,7 +129,7 @@ services=(ly)
 for service in "${services[@]}"; do
     systemctl enable "$service" --root=/mnt
 done
-info_print "Creating i3 keybinds to cool-retro-term, brave and rofi"
+info_print "Creating i3 keybinds to cool-retro-term, brave, brillo and rofi"
 mkdir -p /home/kani/.config/i3
 # Remove drun and enable rofi
 sed -i 's/# bindcode $mod+40 exec "rofi -modi drun,run -show drun"/bindsym $mod+d exec "rofi -modi drun,run -show drun"/' /mnt/home/kani/.config/i3/config
@@ -137,6 +137,9 @@ sed -i 's/bindsym $mod+d exec --no-startup-id dmenu_run/# bindsym $mod+d exec --
 
 # Use cool-retro-term and add brave
 sed -i 's/bindsym $mod+Return exec i3-sensible-terminal/bindsym $mod+Return exec cool-retro-term\n\n# start brave browser\nbindsym $mod+b exec brave/' /mnt/home/kani/.config/i3/config
+
+# brillo backlight control   
+sed -i 's/bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status/\n# Use brillo to control screen and keyboard backlight\nbindsym XF86MonBrightnessDown exec --no-startup-id brillo -q -u 25000 -s intel_backlight -U 2\nbindsym XF86MonBrightnessUp exec --no-startup-id brillo -q -u 25000 -s intel_backlight -A 2\nbindsym $mod+XF86MonBrightnessDown exec --no-startup-id brillo -q -k -u 25000 -s chromeos::kbd_backlight -U 5\nbindsym $mod+XF86MonBrightnessUp exec --no-startup-id brillo -q -k -u 25000 -s chromeos::kbd_backlight -A 5/' /mnt/home/kani/.config/i3/config
 
 # use py3status instead of i3status - DISABLED
 #sed -i 's/status_command i3status/status_command py3status/' /mnt/home/kani/.config/i3/config
