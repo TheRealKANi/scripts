@@ -73,32 +73,47 @@ echo "animation = 1" >> /mnt/etc/ly/config.ini # Select Matrix like live wallpap
 info_print "Customizing install with 'yay' 'brave' 'brillo' and 'dotfiles' repo"
 arch-chroot /mnt /bin/bash -e <<EOF
 
-           echo "Installing yay in arch-chroot.."
-           mkdir -p /home/kani/tmp
-           cd /home/kani/tmp
-           git clone https://aur.archlinux.org/yay-bin.git
-           chown -R kani:kani /home/kani
-           cd yay-bin
-           sudo -u kani bash -c 'makepkg -si --noconfirm'
-           cd .. # back to tmp
-           rm -r yay-bin
+               echo "Installing yay in arch-chroot.."
+               mkdir -p /home/kani/tmp
+               cd /home/kani/tmp
+               git clone https://aur.archlinux.org/yay-bin.git
+               chown -R kani:kani /home/kani
+               cd yay-bin
+               sudo -u kani bash -c 'makepkg -si --noconfirm'
+               cd .. # back to tmp
+               rm -r yay-bin
 
-           echo "Installing 'brave' and 'brillo' using yay"
-           sudo -u kani bash -c 'yay -S --noconfirm brave-bin brillo'
+               echo "Installing 'brave' and 'brillo' using yay"
+               sudo -u kani bash -c 'yay -S --noconfirm brave-bin brillo'
 
-           # TODO - Clone dorfiles repo - Apply config later!
-           # runas kani
-           #yadm clone https://github.com/TheRealKANi/dotfiles
+               # TODO - Clone dorfiles repo - Apply config later!
+               # runas kani
+               #yadm clone https://github.com/TheRealKANi/dotfiles
 
-           echo "Setting up locale.."
-           cat > /etc/X11/xorg.conf.d/10-keyboard.conf <<EOF
-               Section "InputClass"
-                     Identifier "keyboard default"
-                     MatchIsKeyboard "yes"
-                     Option  "XkbLayout" "dk"
-                     Option  "XkbVariant" "nodeadkeys"
-               EndSection
-  EOF
+               echo "Setting up locale.."
+               cat > /etc/X11/xorg.conf.d/10-keyboard.conf <<EOF
+                   Section "InputClass"
+                         Identifier "keyboard default"
+                         MatchIsKeyboard "yes"
+                         Option  "XkbLayout" "dk"
+                         Option  "XkbVariant" "nodeadkeys"
+                   EndSection
+
+               # Set sound card profile
+               pactl set-card-profile alsa_ctform-tgl_rt1011_rt5682 pro-audio
+
+               # Set default output sink
+               pactl set-default-sink alsa_output.pci-0000_00_1f.3-platform-tgl_rt1011_rt5682.pro-output-0
+
+               # Mute all sources
+               pactl list short sources | awk '/input.*RUNNING/ {system("pactl set-source-mute " $1 " true")}'
+
+               # Mute all sinks
+               pactl list short sinks | awk '/output.*IDLE/ {system("pactl set-sink-mute " $1 " true")}'
+
+               # Unmute Default sink
+               pactl set-sink-mute @DEFAULT_SINK@ off
+EOF
 
 echo "Starting User Services.."
 services=(pipewire pipewire-pulse wireplumber)
