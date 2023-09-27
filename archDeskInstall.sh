@@ -73,7 +73,7 @@ echo "animation = 1" >> /mnt/etc/ly/config.ini # Select Matrix like live wallpap
 info_print "Customizing install with 'yay' 'brave' 'brillo' and 'dotfiles' repo"
 arch-chroot /mnt /bin/bash -e <<EOF
 
-         info_print "Installing yay in arch-chroot.."
+         echo "Installing yay in arch-chroot.."
          mkdir -p /home/kani/tmp
          cd /home/kani/tmp
          git clone https://aur.archlinux.org/yay-bin.git
@@ -83,17 +83,17 @@ arch-chroot /mnt /bin/bash -e <<EOF
          cd .. # back to tmp
          rm -r yay-bin
 
-         info_print "Installing 'brave' and 'brillo' using yay"
+         echo "Installing 'brave' and 'brillo' using yay"
          sudo -u kani bash -c 'yay -S --noconfirm brave-bin brillo'
 
          # TODO - Clone dorfiles repo - Apply config later!
          # runas kani
          #yadm clone https://github.com/TheRealKANi/dotfiles
 
-         info_print "Setting up locale.."
+         echo "Setting up locale.."
          sudo -u kani bash -c 'localectl set-x11-keymap dk'
 
-         info_print "Starting User Services.."
+         echo "Starting User Services.."
          services=(pipewire pipewire-pulse wireplumber)
          for service in "${services[@]}"; do
              sudo -u kani bash -c 'systemctl --user enable "$service"'
