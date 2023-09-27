@@ -496,5 +496,3 @@ configureSystem
 enableServices
 
 scriptEnd
-
-#InstallDesktopPackages
