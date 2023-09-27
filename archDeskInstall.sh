@@ -1,7 +1,36 @@
 #!/usr/bin/env -S bash -e
+# Cosmetics (colours for text).
+BOLD='\e[1m'
+BRED='\e[91m'
+BBLUE='\e[34m'  
+BGREEN='\e[92m'
+BYELLOW='\e[93m'
+RESET='\e[0m'
+
+# Pretty print (function).
+info_print () {
+    echo -e "${BOLD}${BGREEN}[ ${BYELLOW}•${BGREEN} ] $1${RESET}"
+}
+
+# Pretty print no newline (function).
+info_print_clean () {
+    echo -e "${BOLD}${BGREEN} $1${RESET}"
+}
+
+# Pretty print for input (function).
+input_print () {
+    echo -ne "${BOLD}${BYELLOW}[ ${BGREEN}•${BYELLOW} ] $1${RESET}"
+}
+
+# Alert user of bad input (function).
+error_print () {
+    echo -e "${BOLD}${BRED}[ ${BBLUE}•${BRED} ] $1${RESET}"
+}
+
 info_print "Starting TheRealArch Desktop Installation"
 info_print "Installing 'xf86-video-intel' 'mesa' and 'vulkan-intel' Video drivers.."
 pacstrap /mnt xf86-video-intel mesa vulkan-intel &>/dev/null
+
 
 info_print "Installing 'xorg' and 'i3-wm' as desktop enviroment.."
 pacstrap /mnt i3-wm py3status i3status xorg-server xorg-xauth &>/dev/null
@@ -42,25 +71,25 @@ echo "animation = 1" > /mnt/etc/ly/config.ini # Select Matrix like live wallpape
 info_print "Customizing install with 'yay' 'brave' 'brillo' and 'dotfiles' repo"
 arch-chroot /mnt /bin/bash -e <<EOF
 
-       # Install yay in arch-chroot
-       mkdir -p /home/""$username""/tmp
-       cd /home/""$username""/tmp
-       git clone https://aur.archlinux.org/yay-bin.git
-       chown -R kani:kani /home/""$username""
-       cd yay-bin
-       sudo -u ""$username"" bash -c 'makepkg -si --noconfirm'
+         # Install yay in arch-chroot
+         mkdir -p /home/""$username""/tmp
+         cd /home/""$username""/tmp
+         git clone https://aur.archlinux.org/yay-bin.git
+         chown -R kani:kani /home/""$username""
+         cd yay-bin
+         sudo -u ""$username"" bash -c 'makepkg -si --noconfirm'
 
-       # Yay Install brave
-       yay -S --noconfirm brave-bin
+         # Yay Install brave
+         yay -S --noconfirm brave-bin
 
-       # Yay install brillo
-       yay -S --noconfirm brillo
+         # Yay install brillo
+         yay -S --noconfirm brillo
 
-       #cd .. # Back to tmp
-       # TODO - Clone dorfiles repo - Apply config later!
-       #yadm clone https://github.com/TheRealKANi/dotfiles
+         #cd .. # Back to tmp
+         # TODO - Clone dorfiles repo - Apply config later!
+         #yadm clone https://github.com/TheRealKANi/dotfiles
 
-     EOF
+       EOF
 
 # Enable Desktop Services
 info_print "Starting Global Services: ly-dm.."
