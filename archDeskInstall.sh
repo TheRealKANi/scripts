@@ -28,6 +28,8 @@ error_print () {
 }
 
 info_print "Starting TheRealArch Desktop Installation"
+# Run With
+# bash <(curl -L https://raw.githubusercontent.com/TheRealKANi/scripts/main/archDeskInstall.sh)
 info_print "Installing 'xf86-video-intel' 'mesa' and 'vulkan-intel' Video drivers.."
 pacstrap /mnt xf86-video-intel mesa vulkan-intel &>/dev/null
 
@@ -94,6 +96,12 @@ arch-chroot /mnt /bin/bash -e <<EOF
          # Locale setup
          sudo -u kani bash -c 'localectl set-x11-keymap dk'
 
+         info_print "Starting User Services: pipewire.."
+         services=(pipewire pipewire-pulse wireplumber)
+         for service in "${services[@]}"; do
+             sudo -u kani bash -c 'systemctl --user enable "$service"'
+         done
+
 EOF
 
 # Enable Desktop Services
@@ -101,10 +109,4 @@ info_print "Starting Global Services: ly-dm.."
 services=(ly)
 for service in "${services[@]}"; do
     systemctl enable "$service" --root=/mnt
-done
-
-info_print "Starting User Services: pipewire.."
-services=(pipewire pipewire-pulse wireplumber)
-for service in "${services[@]}"; do
-    sudo -u kani bash -c 'systemctl --user enable "$service"'
 done
