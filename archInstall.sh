@@ -297,9 +297,7 @@ installBaseSystem () {
 
 installBaseAddons () {
     info_print "Installing Addons to Base System"
-    pacstrap /mnt nano sof-firmware btrfs-progs \
-             sbctl efibootmgr git base-devel go plymouth reflector \
-             htop
+    pacstrap /mnt nano btrfs-progs sbctl efibootmgr git base-devel go plymouth reflector htop
 }
 
 setupNetworking () {
