@@ -82,18 +82,12 @@ arch-chroot /mnt /bin/bash -e <<EOF
   cd .. # back to tmp
   rm -r yay-bin
 
-  echo "Installing 'brave' and 'brillo' using yay"
-  sudo -u kani bash -c 'yay -S --noconfirm brave-bin brillo'
+  echo "Installing 'brave', 'brillo' and 'sof-firmware' using yay"
+  sudo -u kani bash -c 'yay -S --noconfirm brave-bin brillo extra/sof-firmware'
 
   # TODO - Clone dorfiles repo - Apply config later!
   # runas kani
   #yadm clone https://github.com/TheRealKANi/dotfile
-
-  # WORKING SOUND - TODO - how to install from arch-chroot
-  #curl -O https://github.com/thesofproject/sof-bin/releases/download/v2023.09-rc1/sof-bin-v2023.09-rc1.tar.gz
-  #tar zxf sof-bin-v2023.09-rc1.tar.gz
-  #cd sof-bin-v2023.09-rc1
-  #sudo ./install.sh
 
   #reboot from running system, check chrooted
   #echo "Setting up locale.."
@@ -142,8 +136,21 @@ i3ConfigAddons () {
     sed -i 's/# bindcode $mod+40 exec "rofi -modi drun,run -show drun"/bindsym $mod+d exec "rofi -modi drun,run -show drun"/' /mnt/home/kani/.config/i3/config
     sed -i 's/bindsym $mod+d exec --no-startup-id dmenu_run/# bindsym $mod+d exec --no-startup-id dmenu_run/' /mnt/home/kani/.config/i3/config
 
-    # Use cool-retro-term and add brave
-    sed -i 's/bindsym $mod+Return exec i3-sensible-terminal/bindsym $mod+Return exec cool-retro-term --profile Futuristic\n\n# start brave browser\nbindsym $mod+b exec brave/' /mnt/home/kani/.config/i3/config
+    # Use cool-retro-term, add brave, add volumecontrol via Xf86 bindings, add playerctl bindings for alt+ctrl+p for pause/play and arrow keys for next and previous 
+    sed -i 's/bindsym $mod+Return exec i3-sensible-terminal/bindsym $mod+Return exec cool-retro-term --profile Futuristic\n\n\\
+        # start brave browser\nbindsym $mod+b exec brave/\n\n\\
+        # Use pactl to adjust volume in PulseAudio.\n\\
+        set $refresh_i3status killall -SIGUSR1 i3status\n\\
+        bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status && killall -s USR1 py3status\n\\
+        bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status && killall -s USR1 py3status\n\\
+        bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status && killall -s USR1 py3status\n\\
+        bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status && killall -s USR1 py3status\n\n\\
+        # Global hotkeys for media player control\n\\
+        bindsym $mod+Ctrl+p exec --no-startup-id playerctl play-pause\n\\
+        bindsym $mod+Ctrl+Right exec --no-startup-id playerctl next\n\\
+        bindsym $mod+Ctrl+Left exec --no-startup-id playerctl previous
+
+' /mnt/home/kani/.config/i3/config
 
     # brillo backlight control   
     sed -i 's/bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status/\n# Use brillo to control screen and keyboard backlight\nbindsym XF86MonBrightnessDown exec --no-startup-id brillo -q -u 25000 -s intel_backlight -U 2\nbindsym XF86MonBrightnessUp exec --no-startup-id brillo -q -u 25000 -s intel_backlight -A 2\nbindsym $mod+XF86MonBrightnessDown exec --no-startup-id brillo -q -k -u 25000 -s chromeos::kbd_backlight -U 5\nbindsym $mod+XF86MonBrightnessUp exec --no-startup-id brillo -q -k -u 25000 -s chromeos::kbd_backlight -A 5/' /mnt/home/kani/.config/i3/config
